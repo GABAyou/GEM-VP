@@ -1,0 +1,245 @@
+//this is a specific version in progress ... 2026051518-thu
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEM - Complete Forth-Logic Engine</title>
+    <style>
+        :root {
+            --bg: #000; --fg: #fff; --accent: #00ff00; --hazard: #ff4444; --goal: #ffff00;
+            --card-w: 110px; --card-h: 150px; --nav-h: 70px; --stat-h: 60px;
+        }
+        body { background: var(--bg); color: var(--fg); font-family: 'Verdana', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* 1. THE STAGE & STAT BAR */
+        #stat-bar { 
+            height: var(--stat-h); background: #111; border-bottom: 3px solid var(--accent);
+            display: grid; grid-template-columns: 1fr 1fr 1.5fr; align-items: center;
+            font-size: 0.8rem; font-weight: bold; color: var(--accent); padding: 0 10px;
+        }
+        #stage-container { flex: 1; position: relative; background: #000; overflow: hidden; }
+        #player { width: 35px; height: 35px; background: var(--accent); position: absolute; transition: all 0.3s ease; border: 2px solid #fff; z-index: 5; }
+        .entity { width: 45px; height: 45px; position: absolute; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: bold; }
+
+        /* 2. NAVIGATION */
+        #main-nav { display: flex; background: #000; border-top: 4px solid var(--accent); height: var(--nav-h); }
+        .nav-tab { flex: 1; background: #000; color: #fff; border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .nav-tab.active { background: var(--accent); color: #000; }
+
+        /* 3. VIEWS & SLOTS */
+        .view { display: none; flex: 1; overflow-y: auto; background: #000; }
+        .view.active { display: flex; flex-direction: column; }
+        .slots-container { padding: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; background: #222; min-height: 160px; border-bottom: 2px solid #444; }
+        .slot { width: var(--card-w); height: var(--card-h); border: 2px dashed #555; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        /* 4. CONSOLE & CONTROLS */
+        #logic-console { background: #000; color: var(--accent); font-family: 'Courier New', monospace; font-size: 0.9rem; padding: 10px; border-top: 4px solid var(--accent); height: 100px; overflow-y: auto; }
+        #controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; background: #111; }
+        button { padding: 12px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; }
+        .run-btn { background: var(--accent); color: #000; grid-column: span 2; font-size: 1.2rem; }
+
+        #hand-area { display: grid; grid-template-columns: repeat(auto-fill, var(--card-w)); gap: 10px; padding: 15px; justify-content: center; }
+        #factory { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        input { padding: 12px; font-size: 1rem; background: #111; color: #fff; border: 2px solid #555; }
+        .card { width: var(--card-w); height: var(--card-h); cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="stat-bar">
+        <div>HP: <span id="stat-hp">100</span><br>LIVES: <span id="stat-lives">3</span></div>
+        <div>NRG: <span id="stat-energy">50</span><br>COMP: <span id="stat-comp">10</span></div>
+        <div style="text-align:right">$$: <span id="stat-score">0</span></div>
+    </div>
+
+    <section id="stage-container">
+        <div id="player"></div>
+        <div id="hazard" class="entity" style="background:var(--hazard)">HAZARD</div>
+        <div id="goal" class="entity" style="background:var(--goal); color:#000;">GOAL</div>
+    </section>
+
+    <nav id="main-nav">
+        <button class="nav-tab active" onclick="switchView(this, 'play')">PLAY</button>
+        <button class="nav-tab" onclick="switchView(this, 'deck')">DECK</button>
+        <button class="nav-tab" onclick="switchView(this, 'forge')">FORGE</button>
+    </nav>
+
+    <div id="view-play" class="view active">
+        <div id="play-slots" class="slots-container"></div>
+        <div id="logic-console">Terminal Init. Use Compute to Run.</div>
+        <div id="controls">
+            <button class="run-btn" onclick="executeKernel()">RUN WORD COMPOUND</button>
+            <button onclick="buy('lives')" style="background:#2196F3; color:white;">+LIFE (100$)</button>
+            <button onclick="buy('energy')" style="background:#9C27B0; color:white;">REFUEL (50$)</button>
+            <button onclick="resetEngine()" style="background:#ff4444; color:white; grid-column: span 2;">RESET ENGINE</button>
+        </div>
+    </div>
+
+    <div id="view-deck" class="view">
+        <div id="deck-slots" class="slots-container"></div>
+        <div id="hand-area"></div>
+    </div>
+
+    <div id="view-forge" class="view">
+        <section id="factory">
+            <h3>MINT NEW WORD</h3>
+            <input type="text" id="new-label" placeholder="Name (e.g. BLINK)">
+            <input type="text" id="new-logic" placeholder="Logic (JS)">
+            <input type="text" id="new-id" placeholder="Serial ID">
+            <button style="background:var(--accent); color:#000;" onclick="mintCard()">MINT CARD</button>
+            <hr style="width:100%; border:1px solid #444; margin: 20px 0;">
+            <h3>DECK STORAGE</h3>
+            <button onclick="exportDeck()" style="background:#2196F3; color:white;">EXPORT DECK TO CLIPBOARD</button>
+            <button onclick="importDeck()" style="background:#9C27B0; color:white; margin-top:10px;">IMPORT DECK</button>
+        </section>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const stage = document.getElementById('stage-container');
+        const consoleOutput = document.getElementById('logic-console');
+
+        let posX, posY, hp=100, lives=3, energy=50, compute=10, score=0;
+        let activeSequence = ["", "", ""];
+        let mintedCards = [];
+
+        function logToConsole(msg) {
+            const time = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            consoleOutput.innerHTML = `<div><span style="color:#888;">[${time}]</span> ${msg}</div>` + consoleOutput.innerHTML;
+        }
+
+        function updateUI() {
+            document.getElementById('stat-hp').innerText = hp;
+            document.getElementById('stat-lives').innerText = lives;
+            document.getElementById('stat-energy').innerText = energy;
+            document.getElementById('stat-comp').innerText = compute;
+            document.getElementById('stat-score').innerText = score;
+        }
+
+        function movePlayer(dx, dy) {
+            if(energy <= 0) { logToConsole("ERR: NO ENERGY"); return; }
+            posX += dx; posY += dy;
+            const maxW = stage.clientWidth - 35;
+            const maxH = stage.clientHeight - 35;
+            posX = Math.max(0, Math.min(posX, maxW));
+            posY = Math.max(0, Math.min(posY, maxH));
+            player.style.left = posX + 'px';
+            player.style.top = posY + 'px';
+            energy -= 1;
+            updateUI();
+        }
+
+        function buy(item) {
+            if(score >= 100 && item === 'lives') { score -= 100; lives++; logToConsole("Life Bought."); }
+            if(score >= 50 && item === 'energy') { score -= 50; energy = 50; logToConsole("NRG Refilled."); }
+            updateUI();
+        }
+
+        function checkCollision() {
+            const p = player.getBoundingClientRect();
+            const h = document.getElementById('hazard').getBoundingClientRect();
+            const g = document.getElementById('goal').getBoundingClientRect();
+            if (!(p.right < h.left || p.left > h.right || p.bottom < h.top || p.top > h.bottom)) { 
+                hp -= 34; logToConsole("HIT HAZARD!"); 
+                if(hp <= 0) { lives--; hp=100; logToConsole("LIFE LOST."); }
+            }
+            if (!(p.right < g.left || p.left > g.right || p.bottom < g.top || p.top > g.bottom)) { 
+                score += 100; logToConsole("GOAL REACHED! +100"); 
+            }
+            updateUI();
+        }
+
+        function executeKernel() {
+            if(compute <= 0) { logToConsole("ERR: NO COMPUTE"); return; }
+            const imgs = document.querySelectorAll('#play-slots img');
+            if(!imgs.length) return;
+            compute -= 1;
+            logToConsole("--- RUNNING COMPOUND ---");
+            Array.from(imgs).forEach((img, i) => {
+                setTimeout(() => {
+                    logToConsole(`Word: ${img.alt}`);
+                    try { eval(img.alt); checkCollision(); } catch(e) { logToConsole("LOGIC ERR"); }
+                }, i * 500);
+            });
+            updateUI();
+        }
+
+        function renderSlots() {
+            ['play-slots', 'deck-slots'].forEach(id => {
+                const el = document.getElementById(id); el.innerHTML = "";
+                activeSequence.forEach((content, i) => {
+                    const slot = document.createElement('div');
+                    slot.className = 'slot'; slot.innerHTML = content;
+                    slot.onclick = () => { activeSequence[i] = ""; renderSlots(); };
+                    el.appendChild(slot);
+                });
+            });
+        }
+
+        function createCard(label, logic, icon = "➼", rotation = 0, id = "ID", save = false) {
+            if (save) mintedCards.push({label, logic, icon, rotation, id});
+            const card = document.createElement('div'); card.className = 'card';
+            const svg = `<svg width="110" height="150" viewBox="0 0 110 150"><rect width="106" height="146" x="2" y="2" fill="#000" stroke="#fff" stroke-width="4"/><text x="55" y="60" fill="#fff" font-size="50" text-anchor="middle" transform="rotate(${rotation}, 55, 50)">${icon}</text><text x="55" y="110" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">${label}</text><text x="55" y="135" fill="#555" font-size="9" text-anchor="middle">${id}</text></svg><img src="" alt="${logic}" style="display:none;">`;
+            card.innerHTML = svg;
+            card.onclick = () => {
+                const idx = activeSequence.indexOf("");
+                if (idx !== -1) { activeSequence[idx] = svg; renderSlots(); }
+            };
+            document.getElementById('hand-area').appendChild(card);
+        }
+
+        function addSlot() {
+            if(activeSequence.length < 9) {
+                activeSequence.push(""); logToConsole("SLOT ADDED."); renderSlots();
+            }
+        }
+
+        function switchView(tab, id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('view-' + id).classList.add('active');
+            tab.classList.add('active'); renderSlots();
+        }
+
+        function resetEngine() {
+            posX = 20; posY = 20; hp=100; lives=3; energy=50; compute=10; score=0;
+            player.style.left = posX + 'px'; player.style.top = posY + 'px';
+            document.getElementById('hazard').style.left = '150px';
+            document.getElementById('hazard').style.top = '100px';
+            document.getElementById('goal').style.left = '250px';
+            document.getElementById('goal').style.top = '150px';
+            renderSlots(); updateUI(); logToConsole("System Reset.");
+        }
+
+        function mintCard() {
+            const l = document.getElementById('new-label').value; 
+            const g = document.getElementById('new-logic').value;
+            const i = document.getElementById('new-id').value || "USR-" + Math.floor(Math.random()*999);
+            if(l && g) { createCard(l, g, "➼", 0, i, true); switchView(document.querySelectorAll('.nav-tab')[1], 'deck'); }
+        }
+
+        function exportDeck() { navigator.clipboard.writeText(JSON.stringify(mintedCards)).then(() => alert("Deck Copied!")); }
+        async function importDeck() {
+            const text = await navigator.clipboard.readText();
+            try {
+                const deck = JSON.parse(text);
+                deck.forEach(c => createCard(c.label, c.logic, c.icon, c.rotation, c.id, true));
+                logToConsole("Deck Imported.");
+            } catch(e) { alert("Import Error."); }
+        }
+
+        // DEFAULTS
+        createCard('MOVE R', 'movePlayer(50, 0);', '➼', 0, "D1");
+        createCard('MOVE L', 'movePlayer(-50, 0);', '➼', 180, "D2");
+        createCard('MOVE D', 'movePlayer(0, 50);', '➼', 90, "D3");
+        createCard('MOVE U', 'movePlayer(0, -50);', '➼', -90, "D4");
+        createCard('UPGRADE', 'addSlot();', '⇪', 0, "H1");
+        createCard('HEAL', 'hp = Math.min(100, hp + 20); updateUI();', '✚', 0, "S1");
+        createCard('COMP+', 'compute += 5; updateUI();', '⚡', 0, "C1");
+
+        window.onload = resetEngine;
+    </script>
+</body>
+</html>
