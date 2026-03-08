@@ -48,3 +48,13 @@ Before migrating to the 3D "Infinite Space," we are finalizing the core stabilit
     * **`interpreter.js`**: The parser for **ExplicitPrompt**, translating human intent into kernel commands.
     * **`renderer.js`**: Current **HTML5 Canvas** logic.
 * **`assets/`**: Storage for visual entities, cards, and "Deck" configurations.
+
+
+https://www.youtube.com/watch?v=WPtdS3mgIRE 
+...
+https://www.youtube.com/watch?v=A9UQYf2s5Vg 
+
+
+
+
+
