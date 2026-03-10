@@ -1,0 +1,23 @@
+[
+  {
+    "label": "TELEPORT",
+    "logic": "GameState.posX = Math.random() * (stage.clientWidth - 40); GameState.posY = Math.random() * (stage.clientHeight - 40); Engine.updateDisplay(); Engine.log('Phase Shift Engaged');",
+    "icon": "✧",
+    "rotation": 0,
+    "id": "EXP-001"
+  },
+  {
+    "label": "LOOP-2",
+    "logic": "Engine.log('Looping Sequence...'); setTimeout(() => { document.getElementById('btnRun').click(); }, 500);",
+    "icon": "⟳",
+    "rotation": 0,
+    "id": "EXP-002"
+  },
+  {
+    "label": "IF-HAZARD",
+    "logic": "const p = player.getBoundingClientRect(); const h = document.getElementById('hazard').getBoundingClientRect(); const dist = Math.hypot(p.x - h.x, p.y - h.y); if(dist < 120) { Engine.log('Hazard Near! Evading...'); Engine.movePlayer(-100, -100); GameState.hp = Math.min(100, GameState.hp + 10); } else { Engine.log('Path Clear.'); }",
+    "icon": "◬",
+    "rotation": 0,
+    "id": "EXP-003"
+  }
+]
