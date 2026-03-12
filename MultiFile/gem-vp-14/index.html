@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEM-VP v16</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="stat-bar">
+    <div>HP: <span id="stat-hp">100</span><br>LIVES: <span id="stat-lives">3</span></div>
+    <div>NRG: <span id="stat-energy">50</span><br>COMP: <span id="stat-comp">10</span></div>
+    <div style="text-align:right">$$: <span id="stat-score">0</span></div>
+</div>
+
+<section id="stage-container">
+    <div id="player"></div>
+    <div id="hazard" class="entity" style="background:var(--hazard); left: 150px; top: 100px;">HAZARD</div>
+    <div id="goal" class="entity" style="background:var(--goal); color:#000; left: 250px; top: 150px;">GOAL</div>
+</section>
+
+<nav id="main-nav">
+    <button id="tab-play" class="nav-tab active">PLAY</button>
+    <button id="tab-deck" class="nav-tab">DECK</button>
+    <button id="tab-forge" class="nav-tab">FORGE</button>
+</nav>
+
+<div id="view-play" class="view active">
+    <div id="play-slots" class="slots-container"></div>
+    <div id="console-wrapper">
+        <div id="logic-console">Terminal Ready...</div>
+        <div id="console-btns">
+            <button id="btnClearConsole">CLEAR</button>
+            <button id="btnCopyConsole">COPY</button>
+        </div>
+    </div>
+    <div id="controls">
+        <button class="run-btn" id="btnRun">RUN WORD COMPOUND</button>
+        <button id="btnReset" style="background:var(--hazard); color:#fff;">RESET ENGINE</button>
+    </div>
+</div>
+
+<div id="view-deck" class="view">
+    <div id="deck-slots" class="slots-container"></div>
+    <div id="hand-area"></div>
+</div>
+
+<div id="view-forge" class="view">
+    <section id="factory">
+        <h3>MINT NEW WORD</h3>
+        <input type="text" id="new-label" placeholder="Card Label">
+        <input type="text" id="new-logic" placeholder="Engine.movePlayer(50, 0);">
+        <button id="btnMintCard" style="background:var(--accent); color:#000;">MINT</button>
+        <hr style="border:1px solid #444; margin: 20px 0;">
+        <div style="display: flex; gap: 5px;">
+            <button id="btnExport" style="background:#2196F3; color:white; flex:1;">EXPORT</button>
+            <button id="btnImport" style="background:#9C27B0; color:white; flex:1;">IMPORT</button>
+        </div>
+    </section>
+</div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
