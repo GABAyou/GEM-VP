@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GEM-VP: Spherical Othello</title>
+    <style>
+        /* High-Contrast Reset for Low-Vision */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000; /* Deep black */
+        }
+        canvas {
+            display: block;
+            touch-action: none; /* Prevents phone scrolling while playing */
+        }
+    </style>
+</head>
+<body>
+  <div id="hud" style="position: absolute; top: 20px; left: 20px; color: white; font-family: monospace; font-size: 24px; background: rgba(0,0,0,0.7); padding: 10px; border: 2px solid #33ff33; pointer-events: none;">
+    TURN: <span id="turn" style="color: #ffffff;">WHITE</span><br>
+    WHITE: <span id="score1">0</span><br>
+    MAGENTA: <span id="score2">0</span>
+  </div>  
+
+  <div id="controls" style="position: absolute; bottom: 20px; left: 20px; display: flex; gap: 10px;">
+    <button id="btnZoom" style="padding: 20px; font-size: 20px; background: #33ff33; color: black; border: none; font-weight: bold;">ZOOM</button>
+    <button id="btnRotate" style="padding: 20px; font-size: 20px; background: #33ff33; color: black; border: none; font-weight: bold;">ROTATION</button>
+    <button id="btnReset" style="padding: 20px; font-size: 20px; background: #ff3333; color: white; border: none; font-weight: bold;">RESET</button>
+</div>z
+  
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
