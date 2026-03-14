@@ -1,0 +1,82 @@
+:root {
+  --bg: #000; --neon: #33ff33; --magenta: #ff00ff; --white: #fff; --yellow: #ff0;
+}
+body { margin: 0; background: var(--bg); color: var(--neon); font-family: monospace; }
+
+.nav-header { display: flex; gap: 10px; padding: 10px; border-bottom: 2px solid var(--neon); }
+.nav-header button { background: #111; color: var(--neon); border: 1px solid var(--neon); padding: 10px; }
+
+#tab-play { 
+    display: flex; flex-direction: column; 
+    height: calc(100vh - 60px); padding: 10px; box-sizing: border-box; 
+}
+
+.ui-row { 
+    border: 1px solid var(--neon); padding: 10px; margin-bottom: 5px; 
+    display: flex; justify-content: space-around; font-size: 1.2rem;
+}
+
+/* ROW 3: THE DIRECT CONTROLS */
+.control-bar {
+    display: flex;
+    justify-content: space-around; /* Spreads buttons evenly */
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #111; /* Slight lift from the black background */
+    border: 2px solid var(--neon);
+    border-radius: 12px; /* Matches the rounded corners in your mockup */
+    margin-top: 10px;
+}
+
+.control-bar button {
+    flex: 1; /* Makes all 3 buttons the exact same width */
+    background: none;
+    color: var(--white);
+    border: 2px solid var(--white);
+    border-radius: 8px;
+    padding: 12px 5px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+/* HIGH-CONTRAST HOVER STATE */
+.control-bar button:hover {
+    background: var(--white);
+    color: #000;
+}
+
+/* OPTIONAL: Specific color for the RESET button to stand out */
+#btnReset {
+    border-color: #ff3333; /* Soft red border for safety */
+    color: #ff3333;
+}
+
+#btnReset:hover {
+    background: #ff3333;
+    color: #fff;
+}
+
+.canvas-container { 
+    flex-grow: 1; /* This pushes the UI elements to the top and bottom */
+    border: 1px solid #222; position: relative; overflow: hidden;
+}
+
+canvas { width: 100%; height: 100%; display: block; }
+
+.logic-area { border: 2px solid var(--neon); padding: 10px; margin-top: 5px; }
+.slot-row { display: flex; gap: 5px; justify-content: center; margin-bottom: 10px; }
+
+.logic-slot { 
+    width: 13%; height: 60px; border: 1px solid var(--neon); 
+    border-radius: 8px; display: flex; align-items: center; 
+    justify-content: center; font-size: 0.7rem; color: var(--yellow);
+}
+
+.run-btn { 
+    width: 100%; background: #111; color: var(--white); 
+    border: 2px solid var(--white); padding: 10px; font-weight: bold; 
+}
