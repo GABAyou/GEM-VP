@@ -1,1 +1,26 @@
 Placeholder
+plan to change file structure 
+
+GEM-VP-OthelloSphere-2.1/
+├── index.html
+├── css/
+│   ├── style.css
+│   └── minter.css
+├── js/
+│   ├── manifest.js               # central shared state (keep global GEM_MANIFEST)
+│   ├── core/
+│   │   └── engine.js             # sphere geometry, vertices, faces, adjacency
+│   ├── rendering/
+│   │   └── renderer.js           # animate loop, projection math, drawDots/drawGrid/drawTerritory
+│   ├── rules/
+│   │   └── rules.js              # pure logic: isValidMove, flipAlongPath, scoreTerritory
+│   ├── input/
+│   │   └── input.js              # mouse/touch handlers, drag rotation, click pick, zoom
+│   ├── ui/
+│   │   ├── tabs.js
+│   │   ├── minter.js
+│   │   └── hud.js                # update turn/score/console (extract from main)
+│   ├── execution/
+│   │   └── executor.js           # RUN button, card/slot evaluation
+│   └── main.js                   # now tiny: imports all, wires init, starts animate()
+└── (keep dummy & zip at root or move to /archive/)
